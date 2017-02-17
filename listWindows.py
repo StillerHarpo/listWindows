@@ -66,6 +66,11 @@ curses.noecho()
 curses.cbreak()
 
 keyComb, winID = getStrings()
+savedWsFile=open("/var/tmp/notifyWindows")
+savedWs=eval(savedWsFile.read())
+savedWsFile.close()
+savedWsFile=open("/var/tmp/notifyWindows", 'w')
+savedWsFile.write(str(savedWs))
 while True:
     c = stdscr.getch()
     if c == ord('q'):
@@ -98,18 +103,23 @@ while True:
             for i in keyComb:
                 if ord(i[0])==c1 and ord(i[1])==c2: 
                     call(["wmctrl","-ia", winID[count]])
+                    savedWs[0]=ws[count]+1
+                    savedWsFile.write(str(savedWs))
+                    savedWsFile.close()
                     break 
                 count+=1
         else:
             for i in keyComb:
                 if ord(i[0])==c: 
-                    stdscr.addstr(15,0, "da: "+str(winID[count]))
                     stdscr.refresh()
                     call(["wmctrl","-ia", winID[count]])
+                    savedWs[0]=ws[count]+1
+                    savedWsFile.write(str(savedWs))
+                    savedWsFile.close()
                     break 
                 count+=1
         break
-
+savedWsFile.close()
 curses.nocbreak()
 stdscr.keypad(False)
 curses.echo()
