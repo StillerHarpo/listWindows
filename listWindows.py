@@ -59,30 +59,38 @@ def getStrings():
             countL+=1 # print a empty line between workspaces
         countWs+=1
     stdscr.refresh()
-    return keyComb , [ x.id for x in windows]
+    return keyComb , [ x.id for x in windows], ws
 
 stdscr = curses.initscr()
 curses.noecho()
 curses.cbreak()
 
-keyComb, winID = getStrings()
+keyComb, winID, ws = getStrings()
 savedWsFile=open("/var/tmp/notifyWindows")
 savedWs=eval(savedWsFile.read())
 savedWsFile.close()
 savedWsFile=open("/var/tmp/notifyWindows", 'w')
-savedWsFile.write(str(savedWs))
 while True:
     c = stdscr.getch()
-    if c == ord('q'):
+    if c == ord('q'): # close this programm
+        savedWsFile.write(str(savedWs))
         break
-    elif c == ord('x'):
+    elif c == ord('n'): # focus the next empty workspace
+        for i in range(0,len(ws)):
+            if not i in ws:
+                call(["wmctrl","-s", str(i)])
+                savedWs[0]=i+1
+                savedWsFile.write(str(savedWs))
+                break
+        break
+    elif c == ord('x'): # close the window
         count=0
         if keyComb[0]=="f":
             c = stdscr.getch()
             for i in keyComb:
                 if ord(i[0])==c: 
                     call(["wmctrl","-ic", str(winID[count])])
-                    keyComb, winID= getStrings()
+                    keyComb, winID, ws= getStrings()
                     break
                 count+=1
         else:
@@ -91,12 +99,13 @@ while True:
             for i in keyComb:
                 if ord(i[0])==c1 and ord(i[1])==c2: 
                     call(["wmctrl","-ic", str(winID[count])])
-                    keyComb, winID= getStrings()
+                    keyComb, winID, ws= getStrings()
                     break
                 count+=1
         continue
-    else:
+    else: # focus the window
         count=0
+        isBreak=False
         if keyComb[0]=="ff":
             c1=c
             c2=stdscr.getch()
@@ -105,7 +114,7 @@ while True:
                     call(["wmctrl","-ia", winID[count]])
                     savedWs[0]=ws[count]+1
                     savedWsFile.write(str(savedWs))
-                    savedWsFile.close()
+                    isBreak=True
                     break 
                 count+=1
         else:
@@ -115,10 +124,11 @@ while True:
                     call(["wmctrl","-ia", winID[count]])
                     savedWs[0]=ws[count]+1
                     savedWsFile.write(str(savedWs))
-                    savedWsFile.close()
+                    isBreak=True
                     break 
                 count+=1
-        break
+        if isBreak:
+            break
 savedWsFile.close()
 curses.nocbreak()
 stdscr.keypad(False)
