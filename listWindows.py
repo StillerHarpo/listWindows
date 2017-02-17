@@ -1,5 +1,4 @@
 from wmctrl import Window as W
-from operator import itemgetter
 from subprocess import call
 import psutil
 import curses
@@ -7,8 +6,6 @@ import curses
 def getStrings():
     stdscr.clear()
     windows=W.list()
-    windowsDict=[ x._asdict() for x in windows]
-    windowsDict= sorted(windowsDict, key=itemgetter("desktop"))
     keys=["f","j","d","k","s","l","a"] # keys to chose the window
     keyComb=[] # generate a key Combination for each window
     if (len(keys)<len(windows)): 
@@ -26,9 +23,9 @@ def getStrings():
     else:
         keyComb=keys[0:len(windows)]
     windowNames=[] # get the correct name for programs in terminals
-    for win in windowsDict:
-        name=win["wm_name"]
-        pids=[win["pid"]]
+    for win in windows:
+        name=win.wm_name
+        pids=[win.pid]
         if (name=="termite"): # TODO make it portable for other terminals
             pids=psutil.Process(pids[0]).children()
             if(len(pids)>0 ):
@@ -38,7 +35,7 @@ def getStrings():
                     if(len(pids)>0 ):
                         name=pids[0].name()
         windowNames.append(name)        
-    ws=[x["desktop"] for x in windowsDict]
+    ws=[x.desktop for x in windows]
     windowNumber=[0]*(max(ws)+1)
     for i in (ws):
         windowNumber[i]+=1
@@ -61,7 +58,7 @@ def getStrings():
             countL+=1 # print a empty line between workspaces
         countWs+=1
     stdscr.refresh()
-    return keyComb , [x["id"] for x in windowsDict]
+    return keyComb , [ x.id for x in windows]
 
 stdscr = curses.initscr()
 curses.noecho()
