@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 from wmctrl import Window as W
 from subprocess import call
 import psutil
