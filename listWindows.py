@@ -75,7 +75,10 @@ curses.cbreak()
 
 keyComb, winID, ws = getStrings()
 savedWsFile=open("/var/tmp/notifyWindows")
-savedWs=eval(savedWsFile.read())
+try:
+    savedWs=eval(savedWsFile.read())
+except SyntaxError:
+    savedWs=[1]
 savedWsFile.close()
 savedWsFile=open("/var/tmp/notifyWindows", 'w')
 while True:
