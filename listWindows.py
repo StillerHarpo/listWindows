@@ -23,6 +23,13 @@ def getStrings():
                 break
     else:
         keyComb=keys[0:len(windows)]
+    actice= W.get_active() # dont show this program
+    count=0
+    for win in windows:
+        if win == actice:
+            del windows[count]
+            break
+        count+=1
     windowNames=[] # get the correct name for programs in terminals
     for win in windows:
         name=win.wm_name
@@ -62,6 +69,7 @@ def getStrings():
     return keyComb , [ x.id for x in windows], ws
 
 stdscr = curses.initscr()
+curses.curs_set(0)
 curses.noecho()
 curses.cbreak()
 
