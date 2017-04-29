@@ -3,6 +3,7 @@ from wmctrl import Window as W
 from subprocess import call
 import psutil
 import curses
+import os
 
 def getStrings():
     stdscr.clear()
@@ -80,7 +81,7 @@ try:
 except SyntaxError:
     savedWs=[1]
 savedWsFile.close()
-savedWsFile=open("/var/tmp/notifyWindows", 'w')
+savedWsFile=open( os.getenv("HOME") + "/scripts/var/notifyWindows", 'w')
 while True:
     c = stdscr.getch()
     if c == ord('q'): # close this programm
