@@ -1,4 +1,5 @@
-#!/usr/bin/env python3.5
+#! /usr/bin/env nix-shell
+#! nix-shell -i python3.5 -p python35 python35Packages.psutil wmctrl
 from wmctrl import Window as W
 from subprocess import call
 import psutil
